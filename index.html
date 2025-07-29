@@ -1,23 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Kevin's Market Insights</title>
+  <title>Kevin’s Live Stock Dashboard</title>
 </head>
 <body>
-  <h1>Live Stock Price: AAPL</h1>
-  <div id="price">Loading price...</div>
+  <h1>📈 Live Stock Dashboard</h1>
+
+  <div id="AAPL">Loading AAPL...</div>
+  <div id="TSLA">Loading TSLA...</div>
+  <div id="NVDA">Loading NVDA...</div>
 
   <script>
-    fetch('https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=AAPL&apikey=99FR63XGZPAH0C5K')
-      .then(response => response.json())
-      .then(data => {
-        const price = data["Global Quote"]["05. price"];
-        document.getElementById("price").innerText = `AAPL: $${price}`;
-      })
-      .catch(error => {
-        document.getElementById("price").innerText = "Price unavailable";
-        console.error('Error fetching stock price:', error);
-      });
+    const symbols = ['AAPL', 'TSLA', 'NVDA'];
+    const apiKey = '99FR63XGZPAH0C5K'; // ← Replace with your actual key
+
+    function fetchStock(symbol) {
+      fetch(`https://www.alphavantage.co/query?function=OVERVIEW&symbol=${symbol}&apikey=${apiKey}`)
+        .then(res => res.json())
+        .then(data => {
+          const div = document.getElementById(symbol);
+          div.innerHTML = `
+            <strong>${symbol}</strong><br>
+            P/E Ratio: ${data.PERatio}<br>
+            Beta: ${data.Beta}<br>
+            Dividend Yield: ${data.DividendYield}<br>
+            <a href="https://www.google.com/search?q=${symbol}+stock+news" target="_blank">Latest News</a><br>
+          `;
+        });
+
+      fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${apiKey}`)
+        .then(res => res.json())
+        .then(data => {
+          const price = data["Global Quote"]["05. price"];
+          document.getElementById(symbol).innerHTML += `Price: $${price}<br>`;
+        });
+    }
+
+    symbols.forEach(symbol => fetchStock(symbol));
+    setInterval(() => symbols.forEach(fetchStock), 300000); // Refresh every 5 minutes
   </script>
 </body>
 </html>
