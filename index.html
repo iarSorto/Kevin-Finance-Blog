@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kevin's Market Insights</title>
+</head>
+<body>
+  <h1>Live Stock Price: AAPL</h1>
+  <div id="price">Loading price...</div>
+
+  <script>
+    fetch('https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=AAPL&apikey=99FR63XGZPAH0C5K')
+      .then(response => response.json())
+      .then(data => {
+        const price = data["Global Quote"]["05. price"];
+        document.getElementById("price").innerText = `AAPL: $${price}`;
+      })
+      .catch(error => {
+        document.getElementById("price").innerText = "Price unavailable";
+        console.error('Error fetching stock price:', error);
+      });
+  </script>
+</body>
+</html>
